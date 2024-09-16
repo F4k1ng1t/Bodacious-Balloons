@@ -33,8 +33,8 @@ public class SpikeBehaviour : MonoBehaviourPunCallbacks
             Debug.Log("Spikes Collided Properly");
             player.canMove = false;
             rig.velocity = new Vector3(0,0,0);
-            if(photonView.IsMine)
-                GameManager.instance.GetPlayer(other.transform.parent.gameObject).photonView.RPC("BounceBackandTurnAround", GameManager.instance.GetPlayer(other.transform.parent.gameObject).photonPlayer);
+            //if(photonView.IsMine)
+            //    GameManager.instance.GetPlayer(other.transform.parent.gameObject).photonView.RPC("BounceBackandTurnAround", GameManager.instance.GetPlayer(other.transform.parent.gameObject).photonPlayer);
 
         }
     }
