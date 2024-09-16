@@ -4,41 +4,42 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
+public class PlayerController : MonoBehaviourPunCallbacks//, IPunObservable
 {
+    public bool canMove = true;
     [HideInInspector]
     public int id;
     [Header("Info")]
     public float moveSpeed;
     public float turnSpeed;
     //public float jumpForce;
-    public GameObject hatObject;
-    [HideInInspector]
-    public float curHatTime;
+    //public GameObject hatObject;
+    //[HideInInspector]
+    //public float curHatTime;
     [Header("Components")]
     public Rigidbody rig;
     public Player photonPlayer;
 
     void Update()
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            if (curHatTime >= GameManager.instance.timeToWin && !GameManager.instance.gameEnded)
-{
-                GameManager.instance.gameEnded = true;
-                GameManager.instance.photonView.RPC("WinGame", RpcTarget.All, id);
-            }
-        }
-        //if (photonView.IsMine)
+        //if (PhotonNetwork.IsMasterClient)
         //{
-            Move();
-            //if (Input.GetKeyDown(KeyCode.Space))
-            //    TryJump();
-
-            //if (hatObject.activeInHierarchy)
-            //    curHatTime += Time.deltaTime;
+        //    if (curHatTime >= GameManager.instance.timeToWin && !GameManager.instance.gameEnded)
+        //    {
+        //        GameManager.instance.gameEnded = true;
+        //        GameManager.instance.photonView.RPC("WinGame", RpcTarget.All, id);
+        //    }
         //}
-            
+        if (photonView.IsMine)
+        {
+            if (canMove)
+            {
+                Move();
+            }
+
+
+        }
+
     }
     void Move()
     {
@@ -51,12 +52,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
         rig.velocity = new Vector3(movement.x, rig.velocity.y, movement.z);
     }
-    //void TryJump()
-    //{
-    //    Ray ray = new Ray(transform.position, Vector3.down);
-    //    if (Physics.Raycast(ray, 0.7f))
-    //        rig.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-    //}
+    
     [PunRPC]
     public void Initialize(Player player)
     {
@@ -67,42 +63,21 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         
         if (!photonView.IsMine)
             rig.isKinematic = true;
-        if (id == 1)
-            GameManager.instance.GiveHat(id, true);
+        
     }
-    
-    public void SetHat(bool hasHat)
+    [PunRPC]
+    public void BounceBackandTurnAround()
     {
-        hatObject.SetActive(hasHat);
+        rig.AddForce(new Vector3(0,120,-120));
+        rig.AddTorque(0,180,0);
+        StartCoroutine(BounceBackCooldown());
+
     }
-    void OnCollisionEnter(Collision collision)
+    IEnumerator BounceBackCooldown()
     {
-        if (!photonView.IsMine)
-            return;
-        // did we hit another player?
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            
-            if (GameManager.instance.GetPlayer(collision.gameObject).id == GameManager.instance.playerWithHat)
-{
-                // can we get the hat?
-                if (GameManager.instance.CanGetHat())
-                {
-                    // give us the hat
-                    GameManager.instance.photonView.RPC("GiveHat", RpcTarget.All, id, false);
-                }
-            }
-        }
+        yield return new WaitForSeconds(1);
+        canMove = true;
     }
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(curHatTime);
-        }
-        else if (stream.IsReading)
-        {
-            curHatTime = (float)stream.ReceiveNext();
-        }
-    }
+
+
 }

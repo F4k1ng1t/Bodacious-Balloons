@@ -29,26 +29,26 @@ public class GameUI : MonoBehaviour
             {
                 container.obj.SetActive(true);
                 container.nameText.text = PhotonNetwork.PlayerList[x].NickName;
-                container.hatTimeSlider.maxValue = GameManager.instance.timeToWin;
+                //container.hatTimeSlider.maxValue = GameManager.instance.timeToWin;
             }
             else
                 container.obj.SetActive(false);
         }
     }
-    void Update()
-    {
-        UpdatePlayerUI();
-    }
-    void UpdatePlayerUI()
-    {
-        // loop through all players
-        for (int x = 0; x < GameManager.instance.players.Length; ++x)
-        {
-            if (GameManager.instance.players[x] != null)
-                playerContainers[x].hatTimeSlider.value = GameManager.instance.players[x]
-                .curHatTime;
-        }
-    }
+    //void Update()
+    //{
+    //    UpdatePlayerUI();
+    //}
+    //void UpdatePlayerUI()
+    //{
+    //    // loop through all players
+    //    for (int x = 0; x < GameManager.instance.players.Length; ++x)
+    //    {
+    //        if (GameManager.instance.players[x] != null)
+    //            playerContainers[x].hatTimeSlider.value = GameManager.instance.players[x]
+    //            .curHatTime;
+    //    }
+    //}
     public void SetWinText(string winnerName)
     {
         winText.gameObject.SetActive(true);
@@ -60,5 +60,5 @@ public class PlayerUIContainer
 {
     public GameObject obj;
     public TextMeshProUGUI nameText;
-    public Slider hatTimeSlider;
+    //public Slider hatTimeSlider;
 }
