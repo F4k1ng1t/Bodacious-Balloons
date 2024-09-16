@@ -28,12 +28,12 @@ public class SpikeBehaviour : MonoBehaviourPunCallbacks
         //if (!photonView.IsMine)
         //    return;
         Debug.Log($"collision happened with {other.gameObject.tag}");
-        if (other.CompareTag("Spike") && other.gameObject.GetComponentInParent<Rigidbody>().velocity == Vector3.zero && rig.velocity != Vector3.zero)
+        if (other.CompareTag("Spike") && other.GetComponentInParent<Rigidbody>().velocity == Vector3.zero && rig.velocity != Vector3.zero)
         {
             Debug.Log("Spikes Collided Properly");
             player.canMove = false;
             rig.velocity = new Vector3(0,0,0);
-            GameManager.instance.GetPlayer(other.gameObject).photonView.RPC("BounceBackandTurnAround", GameManager.instance.GetPlayer(other.gameObject).photonPlayer);
+            GameManager.instance.GetPlayer(other.transform.parent.gameObject).photonView.RPC("BounceBackandTurnAround", GameManager.instance.GetPlayer(other.transform.parent.gameObject).photonPlayer);
 
         }
     }
