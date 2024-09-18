@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using ExitGames.Client.Photon.StructWrapping;
 
 public class PlayerController : MonoBehaviourPunCallbacks//, IPunObservable
 {
@@ -19,16 +20,19 @@ public class PlayerController : MonoBehaviourPunCallbacks//, IPunObservable
     [Header("Components")]
     public Rigidbody rig;
     public Player photonPlayer;
+    public BalloonBehaviour balloon;
 
     void Update()
     {
         //if (PhotonNetwork.IsMasterClient)
         //{
-        //    if (curHatTime >= GameManager.instance.timeToWin && !GameManager.instance.gameEnded)
-        //    {
-        //        GameManager.instance.gameEnded = true;
-        //        GameManager.instance.photonView.RPC("WinGame", RpcTarget.All, id);
-        //    }
+            if (GameManager.instance.balloonsLeft == 1 && !balloon.BalloonPopped && !GameManager.instance.gameEnded)
+            {
+                GameManager.instance.gameEnded = true;
+                
+                
+                GameManager.instance.photonView.RPC("WinGame", RpcTarget.All, id);
+            }
         //}
         if (photonView.IsMine)
         {

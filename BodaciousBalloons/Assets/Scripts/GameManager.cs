@@ -9,16 +9,16 @@ public class GameManager : MonoBehaviourPunCallbacks
 {
     [Header("Stats")]
     public bool gameEnded = false; 
-    public float timeToWin; 
-    public float invincibleDuration; 
-    private float hatPickupTime; 
+    
     
     [Header("Players")]
     public string playerPrefabLocation; 
     public Transform[] spawnPoints; 
     public PlayerController[] players; 
-    public int playerWithHat; 
+    
     private int playersInGame;
+
+    public int balloonsLeft; 
     
     public static GameManager instance;
     void Awake()
@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         players = new PlayerController[PhotonNetwork.PlayerList.Length];
         photonView.RPC("ImInGame", RpcTarget.All);
+        balloonsLeft = PhotonNetwork.PlayerList.Length;
     }
     [PunRPC]
     void ImInGame()
@@ -37,14 +38,17 @@ public class GameManager : MonoBehaviourPunCallbacks
         playersInGame++;
         if (playersInGame == PhotonNetwork.PlayerList.Length)
             SpawnPlayer();
+        
     }
     void SpawnPlayer()
     {
         // instantiate the player across the network
+
         GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabLocation, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.identity);
         // get the player script
         PlayerController playerScript = playerObj.GetComponent<PlayerController>();
         playerScript.photonView.RPC("Initialize", RpcTarget.All, PhotonNetwork.LocalPlayer);
+        playerObj.transform.position = spawnPoints[GetID(playerObj.GetComponent<PlayerController>())].position;
     }
     public PlayerController GetPlayer(int playerId)
     {
@@ -53,6 +57,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     public PlayerController GetPlayer(GameObject playerObject)
     {
         return players.First(x => x.gameObject == playerObject);
+    }
+    public int GetID(PlayerController player)
+    {
+        return player.id;
     }
     //[PunRPC]
     //public void GiveHat(int playerId, bool initialGive)
